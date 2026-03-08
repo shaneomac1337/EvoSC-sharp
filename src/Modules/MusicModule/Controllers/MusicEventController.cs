@@ -4,6 +4,7 @@ using EvoSC.Common.Events.Attributes;
 using EvoSC.Common.Interfaces;
 using EvoSC.Common.Interfaces.Controllers;
 using EvoSC.Common.Remote;
+using EvoSC.Manialinks.Interfaces;
 using EvoSC.Modules.Official.MusicModule.Interfaces;
 using GbxRemoteNet.Events;
 using Microsoft.Extensions.Logging;
@@ -34,7 +35,7 @@ public class MusicEventController(
 
             if (musicService.CurrentSong != null)
             {
-                await manialinkManager.SendPersistentManialinkAsync("MusicModule.NowPlayingToast",
+                await manialinkManager.SendManialinkAsync("MusicModule.NowPlayingToast",
                     new { title = musicService.CurrentSong.Title, artist = musicService.CurrentSong.Artist });
             }
         }

@@ -3,6 +3,7 @@ using EvoSC.Common.Controllers.Attributes;
 using EvoSC.Common.Interfaces;
 using EvoSC.Common.Interfaces.Controllers;
 using EvoSC.Manialinks.Attributes;
+using EvoSC.Manialinks.Interfaces;
 using EvoSC.Modules.Official.MusicModule.Interfaces;
 
 namespace EvoSC.Modules.Official.MusicModule.Controllers;

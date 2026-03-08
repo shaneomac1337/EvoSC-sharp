@@ -15,7 +15,6 @@ public class PlaylistService(
 {
     private readonly List<(ISong Song, IPlayer RequestedBy)> _queue = new();
     private readonly object _queueLock = new();
-    private readonly Random _random = new();
     private long _lastPlayedSongId;
 
     public IReadOnlyList<(ISong Song, IPlayer RequestedBy)> Queue
@@ -31,6 +30,7 @@ public class PlaylistService(
 
     public async Task<ISong?> GetNextSongAsync()
     {
+        ISong? queuedSong = null;
         lock (_queueLock)
         {
             if (_queue.Count > 0)
@@ -40,8 +40,13 @@ public class PlaylistService(
                 _lastPlayedSongId = next.Song.Id;
                 logger.LogDebug("Playing queued song: {Title} (requested by {Player})",
                     next.Song.Title, next.RequestedBy.NickName);
-                return Task.FromResult<ISong?>(next.Song).Result;
+                queuedSong = next.Song;
             }
+        }
+
+        if (queuedSong != null)
+        {
+            return queuedSong;
         }
 
         var songs = (await songRepository.GetAllSongsAsync()).ToList();
@@ -55,7 +60,7 @@ public class PlaylistService(
         {
             var candidates = songs.Where(s => s.Id != _lastPlayedSongId).ToList();
             if (candidates.Count == 0) candidates = songs;
-            song = candidates[_random.Next(candidates.Count)];
+            song = candidates[Random.Shared.Next(candidates.Count)];
         }
         else
         {

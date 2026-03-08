@@ -4,6 +4,7 @@ using EvoSC.Common.Controllers;
 using EvoSC.Common.Controllers.Attributes;
 using EvoSC.Common.Interfaces;
 using EvoSC.Common.Interfaces.Services;
+using EvoSC.Manialinks.Interfaces;
 using EvoSC.Modules.Official.MusicModule.Interfaces;
 using Microsoft.Extensions.Logging;
 
@@ -92,7 +93,7 @@ public class MusicCommandController(
 
             if (musicService.CurrentSong != null)
             {
-                await manialinkManager.SendPersistentManialinkAsync("MusicModule.NowPlayingToast",
+                await manialinkManager.SendManialinkAsync("MusicModule.NowPlayingToast",
                     new { title = musicService.CurrentSong.Title, artist = musicService.CurrentSong.Artist });
             }
         }
@@ -159,7 +160,7 @@ public class MusicCommandController(
 
         if (musicService.CurrentSong != null)
         {
-            await manialinkManager.SendPersistentManialinkAsync("MusicModule.NowPlayingToast",
+            await manialinkManager.SendManialinkAsync("MusicModule.NowPlayingToast",
                 new { title = musicService.CurrentSong.Title, artist = musicService.CurrentSong.Artist });
         }
     }
