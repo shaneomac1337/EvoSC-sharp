@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root">
+    <xsd:element name="root" msdata:IsDataSet="true">
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="NoSongPlaying" xml:space="preserve">
+    <value>No song is currently playing.</value>
+  </data>
+  <data name="NowPlaying" xml:space="preserve">
+    <value>Now playing: $&lt;$fff{0}$&gt; by $&lt;$fff{1}$&gt;</value>
+  </data>
+  <data name="SongNotFound" xml:space="preserve">
+    <value>Song not found.</value>
+  </data>
+  <data name="RequestFailed" xml:space="preserve">
+    <value>Cannot request this song. You may have reached your request limit or this song is already queued.</value>
+  </data>
+  <data name="SongRequested" xml:space="preserve">
+    <value>$&lt;$fff{0}$&gt; requested: $&lt;$fff{1}$&gt; by $&lt;$fff{2}$&gt;</value>
+  </data>
+  <data name="AlreadyVoted" xml:space="preserve">
+    <value>You have already voted to skip.</value>
+  </data>
+  <data name="VoteSkipPassed" xml:space="preserve">
+    <value>Vote skip passed! Skipping song...</value>
+  </data>
+  <data name="VoteSkipProgress" xml:space="preserve">
+    <value>$&lt;$fff{0}$&gt; voted to skip. {1} more vote(s) needed.</value>
+  </data>
+  <data name="OnlyOggSupported" xml:space="preserve">
+    <value>Only .ogg files are supported by Trackmania.</value>
+  </data>
+  <data name="SongUrlExists" xml:space="preserve">
+    <value>This song URL is already in the library.</value>
+  </data>
+  <data name="SongAdded" xml:space="preserve">
+    <value>Added: $&lt;$fff{0}$&gt; by $&lt;$fff{1}$&gt; (ID: {2})</value>
+  </data>
+  <data name="SongRemoved" xml:space="preserve">
+    <value>Removed: $&lt;$fff{0}$&gt; by $&lt;$fff{1}$&gt;</value>
+  </data>
+  <data name="ForceSkipped" xml:space="preserve">
+    <value>$&lt;$fff{0}$&gt; force-skipped the current song.</value>
+  </data>
+  <data name="ShuffleToggled" xml:space="preserve">
+    <value>Shuffle is now $&lt;$fff{0}$&gt;.</value>
+  </data>
+  <data name="Command.Song" xml:space="preserve">
+    <value>Show the currently playing song.</value>
+  </data>
+  <data name="Command.Music" xml:space="preserve">
+    <value>Open the music browser.</value>
+  </data>
+  <data name="Command.Request" xml:space="preserve">
+    <value>Request a song by ID.</value>
+  </data>
+  <data name="Command.Skip" xml:space="preserve">
+    <value>Vote to skip the current song.</value>
+  </data>
+  <data name="Command.AddMusic" xml:space="preserve">
+    <value>Add a song to the library.</value>
+  </data>
+  <data name="Command.RemoveMusic" xml:space="preserve">
+    <value>Remove a song from the library.</value>
+  </data>
+  <data name="Command.ForceSkip" xml:space="preserve">
+    <value>Force skip the current song.</value>
+  </data>
+  <data name="Command.Shuffle" xml:space="preserve">
+    <value>Toggle shuffle mode.</value>
+  </data>
+</root>

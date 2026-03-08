@@ -1,0 +1,6 @@
+[info]
+name = "MusicModule"
+title = "Music Jukebox"
+summary = "A full jukebox module for playing custom music on the server"
+version = "1.0.0"
+author = "Evo"
