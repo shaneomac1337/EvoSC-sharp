@@ -26,4 +26,9 @@
         <EmbeddedResource Include="Templates\**\*" />
     </ItemGroup>
 
+    <ItemGroup>
+      <EmbeddedResource Update="Localization.resx">
+      </EmbeddedResource>
+    </ItemGroup>
+
 </Project>

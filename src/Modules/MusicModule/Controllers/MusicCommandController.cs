@@ -3,6 +3,7 @@ using EvoSC.Commands.Interfaces;
 using EvoSC.Common.Controllers;
 using EvoSC.Common.Controllers.Attributes;
 using EvoSC.Common.Interfaces;
+using EvoSC.Common.Interfaces.Localization;
 using EvoSC.Common.Interfaces.Services;
 using EvoSC.Manialinks.Interfaces;
 using EvoSC.Modules.Official.MusicModule.Interfaces;
@@ -20,23 +21,26 @@ public class MusicCommandController(
     IPlayerManagerService playerManager,
     IMusicSettings settings,
     IServerClient serverClient,
+    Locale locale,
     ILogger<MusicCommandController> logger) : EvoScController<ICommandInteractionContext>
 {
-    [ChatCommand("song", "Show the currently playing song.")]
+    private readonly dynamic _locale = locale;
+
+    [ChatCommand("song", "[Command.Song]")]
     public async Task SongAsync()
     {
         var current = musicService.CurrentSong;
         if (current == null)
         {
-            await serverClient.Chat.InfoMessageAsync("No song is currently playing.", Context.Player);
+            await serverClient.Chat.InfoMessageAsync(_locale.PlayerLanguage.NoSongPlaying, Context.Player);
             return;
         }
 
         await serverClient.Chat.InfoMessageAsync(
-            $"Now playing: $<$fff{current.Title}$> by $<$fff{current.Artist}$>", Context.Player);
+            (string)_locale.PlayerLanguage.NowPlaying(current.Title, current.Artist), Context.Player);
     }
 
-    [ChatCommand("music", "Open the music browser.")]
+    [ChatCommand("music", "[Command.Music]")]
     public async Task MusicBrowserAsync()
     {
         var songs = await songRepository.GetAllSongsAsync();
@@ -45,13 +49,13 @@ public class MusicCommandController(
             new { songs, queue, currentSong = musicService.CurrentSong });
     }
 
-    [ChatCommand("request", "Request a song by ID.")]
+    [ChatCommand("request", "[Command.Request]")]
     public async Task RequestAsync(int songId)
     {
         var song = await songRepository.GetSongByIdAsync(songId);
         if (song == null)
         {
-            await serverClient.Chat.ErrorMessageAsync("Song not found.", Context.Player);
+            await serverClient.Chat.ErrorMessageAsync(_locale.PlayerLanguage.SongNotFound, Context.Player);
             return;
         }
 
@@ -59,35 +63,34 @@ public class MusicCommandController(
         if (!success)
         {
             await serverClient.Chat.ErrorMessageAsync(
-                "Cannot request this song. You may have reached your request limit or this song is already queued.",
-                Context.Player);
+                (string)_locale.PlayerLanguage.RequestFailed, Context.Player);
             return;
         }
 
         await serverClient.Chat.InfoMessageAsync(
-            $"$<$fff{Context.Player.NickName}$> requested: $<$fff{song.Title}$> by $<$fff{song.Artist}$>");
+            (string)_locale.PlayerLanguage.SongRequested(Context.Player.NickName, song.Title, song.Artist));
     }
 
-    [ChatCommand("skip", "Vote to skip the current song.")]
+    [ChatCommand("skip", "[Command.Skip]")]
     public async Task SkipVoteAsync()
     {
         if (musicService.CurrentSong == null)
         {
-            await serverClient.Chat.InfoMessageAsync("No song is currently playing.", Context.Player);
+            await serverClient.Chat.InfoMessageAsync(_locale.PlayerLanguage.NoSongPlaying, Context.Player);
             return;
         }
 
         var isNew = voteSkipService.AddVote(Context.Player);
         if (!isNew)
         {
-            await serverClient.Chat.InfoMessageAsync("You have already voted to skip.", Context.Player);
+            await serverClient.Chat.InfoMessageAsync(_locale.PlayerLanguage.AlreadyVoted, Context.Player);
             return;
         }
 
         var onlinePlayers = (await playerManager.GetOnlinePlayersAsync()).Count();
         if (voteSkipService.IsThresholdReached(onlinePlayers))
         {
-            await serverClient.Chat.InfoMessageAsync("Vote skip passed! Skipping song...");
+            await serverClient.Chat.InfoMessageAsync(_locale.PlayerLanguage.VoteSkipPassed);
             voteSkipService.Reset();
             await musicService.AdvanceToNextSongAsync();
 
@@ -101,60 +104,60 @@ public class MusicCommandController(
         {
             var needed = voteSkipService.VotesNeeded(onlinePlayers);
             await serverClient.Chat.InfoMessageAsync(
-                $"$<$fff{Context.Player.NickName}$> voted to skip. {needed} more vote(s) needed.");
+                (string)_locale.PlayerLanguage.VoteSkipProgress(Context.Player.NickName, needed));
         }
     }
 
-    [ChatCommand("addmusic", "Add a song to the library.", MusicPermissions.ManageLibrary)]
+    [ChatCommand("addmusic", "[Command.AddMusic]", MusicPermissions.ManageLibrary)]
     [CommandAlias("am", true)]
     public async Task AddMusicAsync(string url, string title, string artist)
     {
         if (!url.EndsWith(".ogg", StringComparison.OrdinalIgnoreCase))
         {
             await serverClient.Chat.ErrorMessageAsync(
-                "Only .ogg files are supported by Trackmania.", Context.Player);
+                _locale.PlayerLanguage.OnlyOggSupported, Context.Player);
             return;
         }
 
         var existing = await songRepository.GetSongByUrlAsync(url);
         if (existing != null)
         {
-            await serverClient.Chat.ErrorMessageAsync("This song URL is already in the library.", Context.Player);
+            await serverClient.Chat.ErrorMessageAsync(_locale.PlayerLanguage.SongUrlExists, Context.Player);
             return;
         }
 
         var song = await songRepository.AddSongAsync(url, title, artist, 0, Context.Player.AccountId);
         await serverClient.Chat.SuccessMessageAsync(
-            $"Added: $<$fff{song.Title}$> by $<$fff{song.Artist}$> (ID: {song.Id})", Context.Player);
+            (string)_locale.PlayerLanguage.SongAdded(song.Title, song.Artist, song.Id), Context.Player);
     }
 
-    [ChatCommand("removemusic", "Remove a song from the library.", MusicPermissions.ManageLibrary)]
+    [ChatCommand("removemusic", "[Command.RemoveMusic]", MusicPermissions.ManageLibrary)]
     [CommandAlias("rm", true)]
     public async Task RemoveMusicAsync(int songId)
     {
         var song = await songRepository.GetSongByIdAsync(songId);
         if (song == null)
         {
-            await serverClient.Chat.ErrorMessageAsync("Song not found.", Context.Player);
+            await serverClient.Chat.ErrorMessageAsync(_locale.PlayerLanguage.SongNotFound, Context.Player);
             return;
         }
 
         await songRepository.RemoveSongAsync(songId);
         await serverClient.Chat.SuccessMessageAsync(
-            $"Removed: $<$fff{song.Title}$> by $<$fff{song.Artist}$>", Context.Player);
+            (string)_locale.PlayerLanguage.SongRemoved(song.Title, song.Artist), Context.Player);
     }
 
-    [ChatCommand("forceskip", "Force skip the current song.", MusicPermissions.ForceSkip)]
+    [ChatCommand("forceskip", "[Command.ForceSkip]", MusicPermissions.ForceSkip)]
     public async Task ForceSkipAsync()
     {
         if (musicService.CurrentSong == null)
         {
-            await serverClient.Chat.InfoMessageAsync("No song is currently playing.", Context.Player);
+            await serverClient.Chat.InfoMessageAsync(_locale.PlayerLanguage.NoSongPlaying, Context.Player);
             return;
         }
 
         await serverClient.Chat.InfoMessageAsync(
-            $"$<$fff{Context.Player.NickName}$> force-skipped the current song.");
+            (string)_locale.PlayerLanguage.ForceSkipped(Context.Player.NickName));
         voteSkipService.Reset();
         await musicService.AdvanceToNextSongAsync();
 
@@ -165,11 +168,12 @@ public class MusicCommandController(
         }
     }
 
-    [ChatCommand("shuffle", "Toggle shuffle mode.", MusicPermissions.ManageSettings)]
+    [ChatCommand("shuffle", "[Command.Shuffle]", MusicPermissions.ManageSettings)]
     public async Task ToggleShuffleAsync()
     {
         settings.Shuffle = !settings.Shuffle;
         var state = settings.Shuffle ? "on" : "off";
-        await serverClient.Chat.InfoMessageAsync($"Shuffle is now $<$fff{state}$>.", Context.Player);
+        await serverClient.Chat.InfoMessageAsync(
+            (string)_locale.PlayerLanguage.ShuffleToggled(state), Context.Player);
     }
 }
